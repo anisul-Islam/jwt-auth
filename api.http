@@ -1,0 +1,36 @@
+GET http://localhost:5201/api/users
+
+###
+
+GET http://localhost:5201/api/users/684e99f8-e631-4800-97fb-2313e0538334
+
+###
+
+GET http://localhost:5201/api/users/profile
+
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiIxY2M0YWJjZS1kMjhiLTRlMGUtOTY4YS0yMzFmMzMzNGI3Y2IiLCJyb2xlIjoiQWRtaW4iLCJuYmYiOjE3MTUwNzIwODksImV4cCI6MTcxNTA3MjIwOSwiaWF0IjoxNzE1MDcyMDg5LCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUyMDEiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjUyMDEifQ.EAl-CL4Brwf22iXidvmM9OYN_aWfv-hXdq0gjqAXCvk
+
+###
+
+POST http://localhost:5201/api/users
+Content-Type: application/json
+
+{
+  "name": "user9",
+  "email": "user9@example.com",
+  "password": "string",
+  "address": "string",
+  "image": "string",
+  "isAdmin": false,
+  "isBanned": true
+}
+
+###
+
+POST http://localhost:5201/api/users/login
+Content-Type: application/json
+
+{
+  "email": "user8@example.com",
+  "password": "string"
+}
