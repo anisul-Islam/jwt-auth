@@ -1,7 +1,9 @@
 using System.Text;
 using api.EF_CORE;
+using api.Middlewares;
 using api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -15,6 +17,7 @@ builder.Services.AddControllers();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddAutoMapper(typeof(Program));
 
 
 var Configuration = builder.Configuration;
@@ -43,6 +46,8 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -50,16 +55,18 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
 
 app.UseHttpsRedirection();
 
 
 app.MapControllers();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.Run();
 
 // User api 
-// GET -> /api/users -> Get All users
+// GET -> Middleware - /api/users -> Controller -> services - Middleware-> response
 
 // GET -> /api/users/{userId} -> Get a single user
 
@@ -72,3 +79,7 @@ app.Run();
 // POST -> /api/users/ban-user -> ban an user
 
 
+// request - middleware - response - next 
+
+// AutoMapper 
+// ExceptionHandlingMiddleware
