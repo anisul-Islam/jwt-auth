@@ -82,17 +82,17 @@ namespace api.Controllers
         }
 
         // api/users/profile
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpGet("profile")]
         public async Task<IActionResult> GetUserProfile(Guid userId)
         {
 
             var userIdString = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var isAdmin = User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
-            if (!isAdmin)
-            {
-                return ApiResponse.Forbidden("Only admin can visit this route");
-            }
+            // var isAdmin = User.Claims.Any(c => c.Type == ClaimTypes.Role && c.Value == "Admin");
+            // if (!isAdmin)
+            // {
+            //     return ApiResponse.Forbidden("Only admin can visit this route");
+            // }
             Console.WriteLine($"{userIdString}");
             if (string.IsNullOrEmpty(userIdString))
             {

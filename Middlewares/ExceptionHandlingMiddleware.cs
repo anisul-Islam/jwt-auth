@@ -7,6 +7,26 @@ using System.Threading.Tasks;
 
 namespace api.Middlewares
 {
+    public class NotFoundException : Exception
+    {
+        public NotFoundException(string message) : base(message) { }
+    }
+
+    public class ForbiddenAccessException : Exception
+    {
+        public ForbiddenAccessException(string message) : base(message) { }
+    }
+
+    public class ConflictException : Exception
+    {
+        public ConflictException(string message) : base(message) { }
+    }
+
+    public class BadRequestException : Exception
+    {
+        public BadRequestException(string message) : base(message) { }
+    }
+
     public class ExceptionHandlingMiddleware
     {
         private readonly ILogger<ExceptionHandlingMiddleware> _logger;
@@ -39,19 +59,16 @@ namespace api.Middlewares
 
         private static Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-
-            Console.WriteLine($"----------Hello1");
-
             context.Response.ContentType = "application/json";
+
+            // Default response for an unexpected error
             var responseCode = StatusCodes.Status500InternalServerError;
-            var message = "Internal Server Error from the middleware";
+            var message = "An unexpected error has occurred.";
 
-            Console.WriteLine($"----------Hello2");
-
-
+            // Handling specific exceptions
             switch (exception)
             {
-                case DllNotFoundException notFoundException:
+                case NotFoundException notFoundException:
                     responseCode = StatusCodes.Status404NotFound;
                     message = notFoundException.Message;
                     break;
@@ -60,12 +77,36 @@ namespace api.Middlewares
                     responseCode = StatusCodes.Status400BadRequest;
                     message = validationException.Message;
                     break;
+
+                case UnauthorizedAccessException unauthorizedAccessException:
+                    responseCode = StatusCodes.Status401Unauthorized;
+                    message = unauthorizedAccessException.Message;
+                    break;
+
+                case ForbiddenAccessException forbiddenAccessException:
+                    responseCode = StatusCodes.Status403Forbidden;
+                    message = forbiddenAccessException.Message;
+                    break;
+
+                case ConflictException conflictException:
+                    responseCode = StatusCodes.Status409Conflict;
+                    message = conflictException.Message;
+                    break;
+
+                case BadRequestException badRequestException:
+                    responseCode = StatusCodes.Status400BadRequest;
+                    message = badRequestException.Message;
+                    break;
+
+                case ApplicationException applicationException:
+                    // Handling generic application exceptions that might be used for business logic errors
+                    responseCode = StatusCodes.Status400BadRequest;
+                    message = applicationException.Message;
+                    break;
+
                 default:
-                    if (exception is ApplicationException)
-                    {
-                        responseCode = StatusCodes.Status400BadRequest;
-                        message = exception.Message;
-                    }
+                    // Log the exception if it's not one of the expected types
+                    Console.WriteLine("Unhandled exception type: ", exception.GetType());
                     break;
             }
 
@@ -76,10 +117,6 @@ namespace api.Middlewares
                 StatusCode = responseCode,
                 Message = message
             };
-
-            Console.WriteLine("------ Response Message : " + response.Message);
-
-
 
             var jsonResponse = JsonSerializer.Serialize(response);
             return context.Response.WriteAsync(jsonResponse);
