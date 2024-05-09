@@ -1,6 +1,8 @@
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
 using api.Dtos;
 using api.Dtos.User;
+using api.Middlewares;
 using api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -34,12 +36,7 @@ namespace api.Controllers
         public async Task<IActionResult> GetUserById(Guid userId)
         {
 
-            var user = await _userService.GetUserByIdAsync(userId);
-
-            if (user == null)
-            {
-                return ApiResponse.NotFound("Hello: User not found");
-            }
+            var user = await _userService.GetUserByIdAsync(userId) ?? throw new NotFoundException("User not found");
 
             return ApiResponse.Success(user, "User is returned successfully");
 
@@ -51,7 +48,7 @@ namespace api.Controllers
 
             if (!ModelState.IsValid)
             {
-                return ApiResponse.BadRequest("Invalid User Data");
+                throw new ValidationException("Invalid User Data");
             }
 
 

@@ -64,22 +64,3 @@ app.UseHttpsRedirection();
 app.MapControllers();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.Run();
-
-// User api 
-// GET -> Middleware - /api/users -> Controller -> services - Middleware-> response
-
-// GET -> /api/users/{userId} -> Get a single user
-
-// POST -> /api/users -> Create an user
-
-// POST -> /api/users/login -> Login the user
-
-// GET -> /api/users/profile -> get profile info
-
-// POST -> /api/users/ban-user -> ban an user
-
-
-// request - middleware - response - next 
-
-// AutoMapper 
-// ExceptionHandlingMiddleware
